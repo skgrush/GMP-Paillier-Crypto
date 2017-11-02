@@ -33,7 +33,8 @@ PaillierPublicKey makePublicKey(mpz_t N, mpz_t g);
 void Encrypt(mpz_t ciphertext, const mpz_t message, const PaillierPublicKey pub,
              gmp_randstate_t rstate);
 
-
+void EncryptArray(mpz_t cipher[], const mpz_t plain[], unsigned int len,
+                  const PaillierPublicKey pub, gmp_randstate_t rstate);
 
 
 

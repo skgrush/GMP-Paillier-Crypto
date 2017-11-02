@@ -75,3 +75,12 @@ void Encrypt(mpz_t ciphertext, const mpz_t message, const PaillierPublicKey pub,
 
   mpz_clears(r, gtom, rton, (mpz_ptr) 0);
 }
+
+
+void EncryptArray(mpz_t cipher[], const mpz_t plain[], unsigned int len,
+                  const PaillierPublicKey pub, gmp_randstate_t rstate) {
+  unsigned int itr;
+  for (itr = 0; itr < len; itr++) {
+    Encrypt(cipher[itr], plain[itr], pub, rstate);
+  }
+}

@@ -30,6 +30,8 @@ int main(int argc, char *argv[]) {
   unsigned int Ulen, Vlen;
   mpz_t *U = NULL;
   mpz_t *V = NULL;
+  mpz_t *encU = NULL;
+  mpz_t *encV = NULL;
 
   gmp_randstate_t rstate;
 
@@ -38,7 +40,7 @@ int main(int argc, char *argv[]) {
 
 
   // variables for reuse
-  unsigned int readcount;
+  unsigned int readcount, itr;
   FILE *file;
   mpz_t *mpz_array = NULL;
 
@@ -106,6 +108,7 @@ int main(int argc, char *argv[]) {
     fatalError("Failed to write to λµ file", 1);
   fprintf(file, "\n");
   readcount = mpz_out_str(file, 10, priv.mu);
+  fprintf(file, "\n");
   if (readcount == 0)
     fatalError("Failed to write to λµ file", 1);
   else
@@ -113,7 +116,7 @@ int main(int argc, char *argv[]) {
   fclose(file);
 
 
-  // TODO: 3. read in arbitrary-length-Ulen vector U from `vectorU_filename`
+  // 3. read in arbitrary-length-Ulen vector U from `vectorU_filename`
   file = fopen(vectorU_filename, "r");
   if (file == NULL)
     fatalError("Failed to open vector-U file", 1);
@@ -125,11 +128,26 @@ int main(int argc, char *argv[]) {
   printf("Read vector of length %d from vector-U file.\n", Ulen);
 
 
-  // TODO: encrypt vector U
+  // encrypt vector U
   gmp_randinit_default(rstate);
-  
+  encU = (mpz_t*) realloc(encU, sizeof(mpz_t) * Ulen);
+  EncryptArray(encU, U, Ulen, pub, rstate);
 
-  // TODO: 4. output encrypted U to `encU_filename`
+  // 4. output encrypted U to `encU_filename`
+  file = fopen(encU_filename, "w");
+  if (file == NULL)
+    fatalError("Failed to open encU file", 1);
+  else
+    printf("Successfully opened encU file, attempting to write.\n");
+
+  for (itr = 0; itr < Ulen; itr++) {
+    readcount = mpz_out_str(file, 10, encU[itr]);
+    if (!readcount)
+      fatalError("Failed to write to encU file", 1);
+    fprintf(file, "\n");
+  }
+  printf("Successfully wrote encU to file.\n");
+
 
   // TODO: 5. read in arbitrary-length-Vlen vector V from `vectorV_filename`
   // TODO: check Ulen==Vlen, even though Wei said we don't need to
