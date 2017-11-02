@@ -23,6 +23,9 @@ int main(int argc, char *argv[]) {
   mpz_t p;
   mpz_t q;
   mpz_t g;
+  mpz_t N;
+  mpz_t lambda;
+  mpz_t mu;
 
   // FILE *pqg_file;
   // FILE *lambdamu_file;
@@ -56,7 +59,7 @@ int main(int argc, char *argv[]) {
          vectorU_filename, encU_filename, vectorV_filename, encV_filename,
          output_filename);
 
-  // TODO: 1. read p,q,g from `pqg_filename`
+  // 1. read p,q,g from `pqg_filename`
   file = fopen(pqg_filename, "r");
   if (file == NULL)
     fatalError("Failed to open pqg file", 1);
@@ -64,23 +67,29 @@ int main(int argc, char *argv[]) {
     printf("Successfully opened pqg file, attempting read.\n");
 
   readcount = readFromFile(file, &mpz_array);
+  fclose(file);
 
   if (readcount != 3)
     fatalError("pqg file contains wrong number of values", 1);
   else
     printf("Correctly found 3 values in pqg file\n");
 
-  mpz_inits(p, g, q, (mpz_ptr) NULL);
-  mpz_set(p, mpz_array[0]);
-  mpz_set(q, mpz_array[1]);
-  mpz_set(g, mpz_array[2]);
+  mpz_init_set(p, mpz_array[0]);
+  mpz_init_set(q, mpz_array[1]);
+  mpz_init_set(g, mpz_array[2]);
+  freeMPZArray(&mpz_array, 3);
 
-  printf("Attempting to print pqg...\n");
+  gmp_printf("p = %Zd\nq = %Zd\ng = %Zd\n", p, q, g);
 
-  gmp_printf("%Zd\n%Zd\n%Zd\n", p, q, g);
 
-  // TODO: generate n, lambda, and mu
+  // generate n, lambda, and mu
+  mpz_inits(N, lambda, mu, (mpz_ptr) 0);
+  mpz_mul(N, p, q);
+  getLambda(lambda, p, q);
+  getMu(mu, lambda, g, N);
+
   // TODO: 2. output lambda and mu to `lambdamu_filename`
+
 
   // TODO: 3. read in arbitrary-length-N vector U from `vectorU_filename`
 
