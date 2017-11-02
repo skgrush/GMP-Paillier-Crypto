@@ -6,6 +6,9 @@
 #include "utils.h"
 #include "paillier.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <gmp.h>
 
 
 int main(int argc, char *argv[]) {
@@ -17,6 +20,9 @@ int main(int argc, char *argv[]) {
   char *vectorV_filename = NULL;
   char *encV_filename = NULL;
   char *output_filename = NULL;
+  mpz_t p;
+  mpz_t q;
+  mpz_t g;
 
   // FILE *pqg_file;
   // FILE *lambdamu_file;
@@ -25,7 +31,11 @@ int main(int argc, char *argv[]) {
   // FILE *vectorV_file;
   // FILE *encV_file;
   // FILE *output_file;
+
+  // variables for reuse
+  unsigned int readcount;
   FILE *file;
+  mpz_t *mpz_array = NULL;
 
 
   printf("Greetings and Salutations!\n\n");
@@ -42,11 +52,32 @@ int main(int argc, char *argv[]) {
   prompt("Enter the output file name to store E(u.v) and u.v: ",
           &output_filename);
 
-  printf("\n%s%s%s%s%s%s%s", pqg_filename, lambdamu_filename,
+  printf("\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n", pqg_filename, lambdamu_filename,
          vectorU_filename, encU_filename, vectorV_filename, encV_filename,
          output_filename);
 
   // TODO: 1. read p,q,g from `pqg_filename`
+  file = fopen(pqg_filename, "r");
+  if (file == NULL)
+    fatalError("Failed to open pqg file", 1);
+  else
+    printf("Successfully opened pqg file, attempting read.\n");
+
+  readcount = readFromFile(file, &mpz_array);
+
+  if (readcount != 3)
+    fatalError("pqg file contains wrong number of values", 1);
+  else
+    printf("Correctly found 3 values in pqg file\n");
+
+  mpz_inits(p, g, q, (mpz_ptr) NULL);
+  mpz_set(p, mpz_array[0]);
+  mpz_set(q, mpz_array[1]);
+  mpz_set(g, mpz_array[2]);
+
+  printf("Attempting to print pqg...\n");
+
+  gmp_printf("%Zd\n%Zd\n%Zd\n", p, q, g);
 
   // TODO: generate n, lambda, and mu
   // TODO: 2. output lambda and mu to `lambdamu_filename`
