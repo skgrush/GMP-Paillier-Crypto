@@ -13,6 +13,7 @@
 typedef struct PaillierPublicKey {
   mpz_t N;
   mpz_t g;
+  mpz_t N2;
 } PaillierPublicKey;
 
 typedef struct PaillierPrivateKey {
@@ -25,7 +26,12 @@ void getLambda(mpz_t lambda, const mpz_t p, const mpz_t q);
 
 void getMu(mpz_t mu, const mpz_t lambda, const mpz_t g, const mpz_t N);
 
+PaillierPrivateKey makePrivateKey(mpz_t lambda, const PaillierPublicKey pub);
 
+PaillierPublicKey makePublicKey(mpz_t N, mpz_t g);
+
+void Encrypt(mpz_t ciphertext, const mpz_t message, const PaillierPublicKey pub,
+             gmp_randstate_t rstate);
 
 
 

@@ -20,20 +20,22 @@ int main(int argc, char *argv[]) {
   char *vectorV_filename = NULL;
   char *encV_filename = NULL;
   char *output_filename = NULL;
+
   mpz_t p;
   mpz_t q;
   mpz_t g;
   mpz_t N;
   mpz_t lambda;
-  mpz_t mu;
 
-  // FILE *pqg_file;
-  // FILE *lambdamu_file;
-  // FILE *vectorU_file;
-  // FILE *encU_file;
-  // FILE *vectorV_file;
-  // FILE *encV_file;
-  // FILE *output_file;
+  unsigned int Ulen, Vlen;
+  mpz_t *U = NULL;
+  mpz_t *V = NULL;
+
+  gmp_randstate_t rstate;
+
+  PaillierPrivateKey priv;
+  PaillierPublicKey pub;
+
 
   // variables for reuse
   unsigned int readcount;
@@ -84,12 +86,13 @@ int main(int argc, char *argv[]) {
 
 
   // generate n, lambda, and mu
-  mpz_inits(N, lambda, mu, (mpz_ptr) 0);
+  mpz_inits(N, lambda, (mpz_ptr) 0);
   mpz_mul(N, p, q);
+  pub = makePublicKey(N, g);
   getLambda(lambda, p, q);
-  getMu(mu, lambda, g, N);
+  priv = makePrivateKey(lambda, pub);
 
-  gmp_printf("N = %Zd\nλ = %Zd\nµ = %Zd\n", N, lambda, mu);
+  gmp_printf("N = %Zd\nλ = %Zd\nµ = %Zd\n", N, lambda, priv.mu);
 
   // 2. output lambda and mu to `lambdamu_filename`
   file = fopen(lambdamu_filename, "w");
@@ -102,7 +105,7 @@ int main(int argc, char *argv[]) {
   if (readcount == 0)
     fatalError("Failed to write to λµ file", 1);
   fprintf(file, "\n");
-  readcount = mpz_out_str(file, 10, mu);
+  readcount = mpz_out_str(file, 10, priv.mu);
   if (readcount == 0)
     fatalError("Failed to write to λµ file", 1);
   else
@@ -111,8 +114,21 @@ int main(int argc, char *argv[]) {
 
 
   // TODO: 3. read in arbitrary-length-Ulen vector U from `vectorU_filename`
+  file = fopen(vectorU_filename, "r");
+  if (file == NULL)
+    fatalError("Failed to open vector-U file", 1);
+  else
+    printf("Successfully opened vector-U file, attempting read.\n");
+
+  Ulen = readFromFile(file, &U);
+  fclose(file);
+  printf("Read vector of length %d from vector-U file.\n", Ulen);
+
 
   // TODO: encrypt vector U
+  gmp_randinit_default(rstate);
+  
+
   // TODO: 4. output encrypted U to `encU_filename`
 
   // TODO: 5. read in arbitrary-length-Vlen vector V from `vectorV_filename`
