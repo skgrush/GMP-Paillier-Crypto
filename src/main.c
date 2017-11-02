@@ -3,29 +3,30 @@
  *
  */
 
+#include "utils.h"
 #include "paillier.h"
 
-#include <stdio.h>
-
-size_t prompt(char const *prompt, char **inputptr);
 
 
 int main(int argc, char *argv[]) {
 
   char *pqg_filename = NULL;
-  FILE *pqg_file;
   char *lambdamu_filename = NULL;
-  FILE *lambdamu_file;
   char *vectorU_filename = NULL;
-  FILE *vectorU_file;
   char *encU_filename = NULL;
-  FILE *encU_file;
   char *vectorV_filename = NULL;
-  FILE *vectorV_file;
   char *encV_filename = NULL;
-  FILE *encV_file;
   char *output_filename = NULL;
-  FILE *output_file;
+
+  // FILE *pqg_file;
+  // FILE *lambdamu_file;
+  // FILE *vectorU_file;
+  // FILE *encU_file;
+  // FILE *vectorV_file;
+  // FILE *encV_file;
+  // FILE *output_file;
+  FILE *file;
+
 
   printf("Greetings and Salutations!\n\n");
 
@@ -66,11 +67,4 @@ int main(int argc, char *argv[]) {
   // TODO: 7. output E(u.v) and u.v to `output_filename`
 
   printf("Farewells and Valedictions!\n");
-}
-
-size_t prompt(char const *prompt, char **inputptr) {
-  size_t len = 0;
-  printf("%s", prompt);
-  getline(inputptr, &len, stdin);
-  return len;
 }
