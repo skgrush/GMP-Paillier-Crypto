@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
          vectorU_filename, encU_filename, vectorV_filename, encV_filename,
          output_filename);
 
+
   // 1. read p,q,g from `pqg_filename`
   file = fopen(pqg_filename, "r");
   if (file == NULL)
@@ -88,16 +89,34 @@ int main(int argc, char *argv[]) {
   getLambda(lambda, p, q);
   getMu(mu, lambda, g, N);
 
-  // TODO: 2. output lambda and mu to `lambdamu_filename`
+  gmp_printf("N = %Zd\nλ = %Zd\nµ = %Zd\n", N, lambda, mu);
+
+  // 2. output lambda and mu to `lambdamu_filename`
+  file = fopen(lambdamu_filename, "w");
+  if (file == NULL)
+    fatalError("Failed to open λµ file", 1);
+  else
+    printf("Successfully opened λµ file, attempting to write.\n");
+
+  readcount = mpz_out_str(file, 10, lambda);
+  if (readcount == 0)
+    fatalError("Failed to write to λµ file", 1);
+  fprintf(file, "\n");
+  readcount = mpz_out_str(file, 10, mu);
+  if (readcount == 0)
+    fatalError("Failed to write to λµ file", 1);
+  else
+    printf("Successfully wrote to λµ file\n");
+  fclose(file);
 
 
-  // TODO: 3. read in arbitrary-length-N vector U from `vectorU_filename`
+  // TODO: 3. read in arbitrary-length-Ulen vector U from `vectorU_filename`
 
   // TODO: encrypt vector U
   // TODO: 4. output encrypted U to `encU_filename`
 
-  // TODO: 5. read in arbitrary-length-N2 vector V from `vectorV_filename`
-  // TODO: check N==N2, even though Wei said we don't need to
+  // TODO: 5. read in arbitrary-length-Vlen vector V from `vectorV_filename`
+  // TODO: check Ulen==Vlen, even though Wei said we don't need to
 
   // TODO: encrypt vector V
   // TODO: 6. output encrypted V to `encV_filename`
