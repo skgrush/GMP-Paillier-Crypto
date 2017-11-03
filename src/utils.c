@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+
 size_t prompt(char const *prompt, char **inputptr) {
   size_t readlen = 0;
   size_t len;
@@ -62,4 +64,8 @@ void freeMPZArray(mpz_t **values, size_t len) {
   for (itr = 0; itr < len; itr++)
     mpz_clear( (*values)[itr] );
   free(*values);
+}
+
+void initGlobalRandstate() {
+  gmp_randinit_default(gpc_randstate);
 }

@@ -33,16 +33,16 @@ int main(int argc, char *argv[]) {
   mpz_t *encU = NULL;
   mpz_t *encV = NULL;
 
-  gmp_randstate_t rstate;
-
   PaillierPrivateKey priv;
   PaillierPublicKey pub;
-
 
   // variables for reuse
   unsigned int readcount, itr;
   FILE *file;
   mpz_t *mpz_array = NULL;
+
+
+  initGlobalRandstate();
 
 
   printf("Greetings and Salutations!\n\n");
@@ -129,9 +129,8 @@ int main(int argc, char *argv[]) {
 
 
   // encrypt vector U
-  gmp_randinit_default(rstate);
   encU = (mpz_t*) realloc(encU, sizeof(mpz_t) * Ulen);
-  EncryptArray(encU, U, Ulen, pub, rstate);
+  EncryptArray(encU, U, Ulen, pub);
 
   // 4. output encrypted U to `encU_filename`
   file = fopen(encU_filename, "w");
@@ -146,10 +145,12 @@ int main(int argc, char *argv[]) {
       fatalError("Failed to write to encU file", 1);
     fprintf(file, "\n");
   }
+  fclose(file);
   printf("Successfully wrote encU to file.\n");
 
 
   // TODO: 5. read in arbitrary-length-Vlen vector V from `vectorV_filename`
+
   // TODO: check Ulen==Vlen, even though Wei said we don't need to
 
   // TODO: encrypt vector V

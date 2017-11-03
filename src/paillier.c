@@ -62,11 +62,11 @@ PaillierPublicKey makePublicKey(mpz_t N, mpz_t g) {
 }
 
 
-void Encrypt(mpz_t ciphertext, const mpz_t message, const PaillierPublicKey pub,
-             gmp_randstate_t rstate) {
+void Encrypt(mpz_t ciphertext, const mpz_t message,
+             const PaillierPublicKey pub) {
   mpz_t r, gtom, rton;
   mpz_inits(r, gtom, rton, (mpz_ptr) 0);
-  mpz_urandomm(r, rstate, pub.N);
+  mpz_urandomm(r, gpc_randstate, pub.N);
 
   // c = (g^m * r^n) mod n2
   mpz_powm(gtom, pub.g, message, pub.N2);
