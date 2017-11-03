@@ -88,9 +88,23 @@ void Encrypt(mpz_t ciphertext, const mpz_t message,
 
 
 void EncryptArray(mpz_t cipher[], const mpz_t plain[], unsigned int len,
-                  const PaillierPublicKey pub, gmp_randstate_t rstate) {
+                  const PaillierPublicKey pub) {
   unsigned int itr;
   for (itr = 0; itr < len; itr++) {
-    Encrypt(cipher[itr], plain[itr], pub, rstate);
+    Encrypt(cipher[itr], plain[itr], pub);
   }
+}
+
+
+/* D(c) = L(c^λ mod N^2) * µ mod N */
+void Decrypt(mpz_t message, const mpz_t ciphertext,
+             const PaillierPrivateKey sk) {
+  mpz_t val;
+  mpz_init(val);
+
+  mpz_powm(val, ciphertext, sk.lambda, sk.N2);
+  L(val, val, sk.N);
+  mpz_mul(val, val, sk.mu);
+
+  mpz_mod(message, val, sk.N);
 }
