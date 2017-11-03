@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-
+gmp_randstate_t gpc_randstate;
 
 size_t prompt(char const *prompt, char **inputptr) {
   size_t readlen = 0;

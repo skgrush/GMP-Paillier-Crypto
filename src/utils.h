@@ -14,7 +14,7 @@
 #define MAX_PARAM_BITCNT 2048
 
 
-gmp_randstate_t gpc_randstate;
+extern gmp_randstate_t gpc_randstate;
 
 size_t prompt(char const *prompt, char **inputptr);
 
