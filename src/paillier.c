@@ -9,6 +9,20 @@
 #include <gmp.h>
 
 
+/**
+ * L(x) = (x-1)//n
+ */
+void L(mpz_t out, const mpz_t x, const mpz_t N) {
+  mpz_t val;
+  mpz_init(val);
+
+  mpz_sub_ui(val, x, 1);
+  mpz_tdiv_q(out, val, N);
+
+  mpz_clear(val);
+}
+
+
 void getLambda(mpz_t lambda, const mpz_t p, const mpz_t q) {
   mpz_t p_1, q_1;
   mpz_inits(p_1, q_1, (mpz_ptr) 0);
@@ -24,18 +38,11 @@ void getLambda(mpz_t lambda, const mpz_t p, const mpz_t q) {
 
 
 void getMu(mpz_t mu, const mpz_t lambda, const PaillierPublicKey pub) {
-  mpz_t g_to_lambda, L;
-  mpz_inits(g_to_lambda, (mpz_ptr) 0);
-
-  // mu = (L(g^lambda mod N^2))^-1 mod N
-  mpz_powm(g_to_lambda, pub.g, lambda, pub.N2);
-  // TODO: is mpz_legendre the right function ?!
-  mpz_init_set_ui( L, mpz_legendre(g_to_lambda, pub.N) );
-
-  if (mpz_invert(mu, L, pub.N) == 0)
+  // µ = ( L(g^λ mod N^2) )^-1 mod N
+  mpz_powm(mu, pub.g, lambda, pub.N2);
+  L(mu, mu, pub.N);
+  if (mpz_invert(mu, mu, pub.N) == 0)
     fatalError("No inverse found for L under N", 3);
-
-  mpz_clears(g_to_lambda, L, (mpz_ptr) 0);
 }
 
 
@@ -45,6 +52,9 @@ PaillierPrivateKey makePrivateKey(mpz_t lambda, const PaillierPublicKey pub) {
 
   mpz_init(priv.mu);
   getMu(priv.mu, lambda, pub);
+
+  mpz_init_set(priv.N, pub.N);
+  mpz_init_set(priv.N2, pub.N2);
 
   return priv;
 }
