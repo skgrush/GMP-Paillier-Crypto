@@ -71,26 +71,26 @@ void secureMult_P1_HpToProduct(mpz_t encProduct,
 }
 
 void homomorphicMult(mpz_t encProduct, 
-                  const mpz_t A, const mpz_t B, 
+                  const mpz_t encA, const mpz_t B, 
                   const PaillierPublicKey pub) {
-  mpz_powm(encProduct, A, B, pub.N2);
+  mpz_powm(encProduct, encA, B, pub.N2);
 }
 
-void homomorphicAdd(mpz_t result, 
-                    const mpz_t A, const mpz_t B, 
+void homomorphicAdd(mpz_t encSum, 
+                    const mpz_t encA, const mpz_t encB, 
                     const PaillierPublicKey pub) {
-  mpz_mul(result, A, B);
-  mpz_mod(result, result, pub.N2);
+  mpz_mul(encSum, encA, encB);
+  mpz_mod(encSum, encSum, pub.N2);
 }
 
-void dotProd(mpz_t UdotV, const mpz_t *U, const mpz_t *V, const int LEN, 
+void dotProd(mpz_t encDot, const mpz_t *encU, const mpz_t *V, const int LEN, 
              const PaillierPublicKey pub) {
-  mpz_t UV;
+  mpz_t encUV;
    
   for (int i = 0; i < LEN; i++) {
-    mpz_init(UV);
-    homomorphicMult(UV, U[i], V[i], pub);
-    homomorphicAdd(UdotV, UV, UdotV, pub);
-    mpz_clear(UV);
+    mpz_init(encUV);
+    homomorphicMult(encUV, encU[i], V[i], pub);
+    homomorphicAdd(encDot, encUV, encDot, pub);
+    mpz_clear(encUV);
   }
 }
