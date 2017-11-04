@@ -10,6 +10,9 @@
 #include <gmp.h>
 
 
+#define MILLER_RABIN_ROUNDS 30
+
+
 typedef struct PaillierPublicKey {
   mpz_t N;
   mpz_t g;
@@ -24,9 +27,13 @@ typedef struct PaillierPrivateKey {
 } PaillierPrivateKey;
 
 
+void keygen(PaillierPublicKey *pub, PaillierPrivateKey *sk,
+            const unsigned short k);
+
 void getLambda(mpz_t lambda, const mpz_t p, const mpz_t q);
 
-void getMu(mpz_t mu, const mpz_t lambda, const PaillierPublicKey pub);
+int getMu(mpz_t mu, const mpz_t lambda, const mpz_t g, const mpz_t N,
+          const mpz_t N2);
 
 PaillierPrivateKey makePrivateKey(mpz_t lambda, const PaillierPublicKey pub);
 
