@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "paillier.h"
 
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <gmp.h>
@@ -43,6 +44,26 @@ int main(int argc, char *argv[]) {
 
 
   initGlobalRandstate();
+
+
+  if (strcmp(argv[1], "--tk") == 0) {
+    if (argc < 3)
+      fatalError("--tk expects an argument", 1);
+    printf("Testing keygen!\n");
+    itr = atoi(argv[2]);
+    printf("Using k = %d\n\n", itr);
+
+    keygen(&pub, &priv, itr);
+
+    printf("\nDone testing!\n\n");
+
+    gmp_printf(" N = %Zd\n", pub.N);
+    gmp_printf(" g = %Zd\n", pub.g);
+    gmp_printf(" λ = %Zd\n", priv.lambda);
+    gmp_printf(" µ = %Zd\n", priv.mu);
+    return 0;
+  }
+  printf("%s\n", argv[1]);
 
 
   printf("Greetings and Salutations!\n\n");

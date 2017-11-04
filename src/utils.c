@@ -67,5 +67,21 @@ void freeMPZArray(mpz_t **values, size_t len) {
 }
 
 void initGlobalRandstate() {
+  char seed[10];
+  unsigned long numseed;
+  FILE *file;
   gmp_randinit_default(gpc_randstate);
+
+  file = fopen("/dev/urandom", "r");
+  if (file == NULL)
+    fatalError("Failed to read from urandom", 1);
+  if (fread(seed, 10, 1, file) < 1) {
+    printf("%s\n", seed);
+    fatalError("Failed to read adequately from urandom", 1);
+  }
+  fclose(file);
+
+  numseed = seed[0] | (seed[1] << 8) | (seed[2] << 16) | (seed[3] << 24);
+
+  gmp_randseed_ui(gpc_randstate, numseed);
 }
