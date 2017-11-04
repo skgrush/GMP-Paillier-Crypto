@@ -69,3 +69,28 @@ void secureMult_P1_HpToProduct(mpz_t encProduct,
   mpz_powm(encProduct, encProduct, N_1, pub.N);
   mpz_mul(encProduct, Sp, encProduct);
 }
+
+void homomorphicMult(mpz_t encProduct, 
+                  const mpz_t A, const mpz_t B, 
+                  const PaillierPublicKey pub) {
+  mpz_powm(encProduct, A, B, pub.N2);
+}
+
+void homomorphicAdd(mpz_t result, 
+                    const mpz_t A, const mpz_t B, 
+                    const PaillierPublicKey pub) {
+  mpz_mul(result, A, B);
+  mpz_mod(result, result, pub.N2);
+}
+
+void dotProd(mpz_t UdotV, const mpz_t *U, const mpz_t *V, const int LEN, 
+             const PaillierPublicKey pub) {
+  mpz_t UV;
+   
+  for (int i = 0; i < LEN; i++) {
+    mpz_init(UV);
+    homomorphicMult(UV, U[i], V[i], pub);
+    homomorphicAdd(UdotV, UV, UdotV, pub);
+    mpz_clear(UV);
+  }
+}

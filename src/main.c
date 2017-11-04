@@ -5,6 +5,7 @@
 
 #include "utils.h"
 #include "paillier.h"
+#include "secure_products.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,9 @@ int main(int argc, char *argv[]) {
   mpz_t *V = NULL;
   mpz_t *encU = NULL;
   mpz_t *encV = NULL;
+  
+  mpz_t UdotV;
+  mpz_t E_UdotV;
 
   PaillierPrivateKey priv;
   PaillierPublicKey pub;
@@ -127,7 +131,6 @@ int main(int argc, char *argv[]) {
   fclose(file);
   printf("Read vector of length %d from vector-U file.\n", Ulen);
 
-
   // encrypt vector U
   encU = (mpz_t*) realloc(encU, sizeof(mpz_t) * Ulen);
   EncryptArray(encU, U, Ulen, pub);
@@ -149,16 +152,59 @@ int main(int argc, char *argv[]) {
   printf("Successfully wrote encU to file.\n");
 
 
-  // TODO: 5. read in arbitrary-length-Vlen vector V from `vectorV_filename`
+  // 5. read in arbitrary-length-Vlen vector V from `vectorV_filename`
+  file = fopen(vectorV_filename, "r");
+  if (file == NULL)
+    fatalError("Failed to open vector-V file", 1);
+  else
+    printf("Successfully opened vector-V file, attempting read.\n");
 
-  // TODO: check Ulen==Vlen, even though Wei said we don't need to
+  Vlen = readFromFile(file, &V);
+  fclose(file);
+  printf("Read vector of length %d from vector-V file.\n", Ulen);
+  
+  // check Ulen==Vlen, even though Wei said we don't need to
+  if (Ulen != Vlen)
+    fatalError("Vector lengths do not match!", 1);
+  
+  // encrypt vector V
+  encV = (mpz_t*) realloc(encV, sizeof(mpz_t) * Vlen);
+  EncryptArray(encV, V, Vlen, pub);
 
-  // TODO: encrypt vector V
-  // TODO: 6. output encrypted V to `encV_filename`
+  // 4. output encrypted V to `encV_filename`
+  file = fopen(encV_filename, "w");
+  if (file == NULL)
+    fatalError("Failed to open encV file", 1);
+  else
+    printf("Successfully opened encV file, attempting to write.\n");
 
-  // TODO: compute E(u.v)
-  // TODO: decrypt to u.v
-  // TODO: 7. output E(u.v) and u.v to `output_filename`
-
+  for (itr = 0; itr < Vlen; itr++) {
+    readcount = mpz_out_str(file, 10, encV[itr]);
+    if (!readcount)
+      fatalError("Failed to write to encV file", 1);
+    fprintf(file, "\n");
+  }
+  fclose(file);
+  printf("Successfully wrote encV to file.\n");
+  
+  // compute E(u.v)
+  mpz_init(UdotV);
+  mpz_init(E_UdotV);
+  Encrypt(E_UdotV, UdotV, pub);
+  dotProd(E_UdotV, U, V, Ulen, pub);
+  
+  // decrypt to u.v
+  Decrypt(UdotV, E_UdotV, priv);
+  
+  // 7. output E(u.v) and u.v to `output_filename`
+  file = fopen(output_filename, "w");
+  if (file == NULL)
+    fatalError("Failed to open dot product output file", 1);
+  else
+    printf("Successfully opened dot product output file, attempting to write.\n");
+  gmp_fprintf(file, "%Zd\n%Zd\n", E_UdotV, UdotV);
+  fclose(file);
+  
+  printf("Successfully wrote E(u.v) and u.v to file!\n");
   printf("Farewells and Valedictions!\n");
 }

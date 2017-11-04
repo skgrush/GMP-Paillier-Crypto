@@ -35,4 +35,19 @@ void secureMult_P2_makeHp(mpz_t Hp,
                           const PaillierPublicKey pub);
 
 
+
+/**
+ * Multiplies using ciphertext-by-plaintext approach
+ *
+ */
+void homomorphicMult(mpz_t encProduct, const mpz_t A, const mpz_t B, 
+                  const PaillierPublicKey pub);
+
+void homomorphicAdd(mpz_t result, 
+                    const mpz_t A, const mpz_t B, 
+                    const PaillierPublicKey pub);
+
+void dotProd(mpz_t UdotV, const mpz_t *U, const mpz_t *V, const int LEN, 
+             const PaillierPublicKey pub);
+
 #endif // SECURE_PRODUCT_H_
