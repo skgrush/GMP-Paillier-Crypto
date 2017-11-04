@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
   encV = (mpz_t*) realloc(encV, sizeof(mpz_t) * Vlen);
   EncryptArray(encV, V, Vlen, pub);
 
-  // 4. output encrypted V to `encV_filename`
+  // 6. output encrypted V to `encV_filename`
   file = fopen(encV_filename, "w");
   if (file == NULL)
     fatalError("Failed to open encV file", 1);
