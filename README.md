@@ -28,7 +28,7 @@ This will — if successful — generate the binary executable `gpc`.
 ## Execution
 
 Running `./gpc` with no arguments will
-initiate the interactive script specified in [proj3.pdf](./proj3.pdf).
+initiate the interactive script specified in the initial project specification.
 
 You will need:
   * 1\. **input** file containing **_p_, _q_, and _g_**.  _p_ and _q_ should
